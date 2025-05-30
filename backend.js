@@ -27,7 +27,7 @@ app.use('/uploads', express.static(uploadsDir));
 app.use(express.static(path.join(__dirname, '')));
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/facultyDB', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://0.0.0.0:27017/facultyDB', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
