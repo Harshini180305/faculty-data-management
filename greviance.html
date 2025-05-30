@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty Grievance Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2a5298;
+      --secondary-color: #1e3c72;
+      --accent-color: #4b8df8;
+      --error-color: #dc3545;
+      --success-color: #198754;
+      --light-bg: #f8f9fa;
+      --warning-color: #ffc107;
+    }
+    
+    body {
+      background-color: var(--light-bg);
+      padding-top: 100px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background: #2e2c50;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-btn:hover {
+      background: #45a049;
+    }
+    
+    .grievance-container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-top: 5px solid var(--primary-color);
+      transition: all 0.3s ease;
+    }
+    
+    .grievance-container:hover {
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .form-header {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    
+    .form-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: var(--accent-color);
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .form-control, .form-select {
+      border-radius: 8px;
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 0.25rem rgba(75, 141, 248, 0.25);
+    }
+    
+    .validation-message {
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .invalid-feedback {
+      color: var(--error-color);
+    }
+    
+    .valid-feedback {
+      color: var(--success-color);
+    }
+    
+    .btn-submit {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      border: none;
+      padding: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(42, 82, 152, 0.4);
+    }
+    
+    .char-counter {
+      font-size: 0.85rem;
+      text-align: right;
+      color: #6c757d;
+    }
+    
+    .char-counter.warning {
+      color: var(--warning-color);
+    }
+    
+    .char-counter.error {
+      color: var(--error-color);
+    }
+    
+    .input-icon {
+      position: relative;
+    }
+    
+    .input-icon i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+    
+    /* Animation */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    
+    .shake {
+      animation: shake 0.5s;
+    }
+    
+    .recommended-length {
+      font-size: 0.8rem;
+      color: var(--warning-color);
+      margin-top: 5px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 10px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .navbar {
+        flex-direction: column;
+        padding: 10px;
+      }
+      
+      .nav-links {
+        margin-top: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      body {
+        padding-top: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a class="navbar-brand" href="homef.html">FaculTech👨‍🎓</a>
+    <div class="nav-links">
+      <a class="nav-link" href="aboutf.html">About Us</a>
+      <a class="nav-link" href="homef.html">Home</a>
+      <!--<a class="login-btn" href="registerf.html">Register</a>-->
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container grievance-container">
+    <h2 class="form-header">
+      <i class="fas fa-comment-dots me-2"></i>Faculty Grievance Form
+    </h2>
+    <form id="grievanceForm" novalidate>
+      <div class="mb-4">
+        <label for="facultyName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="facultyName" name="facultyName" 
+               maxlength="20" pattern=".{3,20}" required>
+        <div class="invalid-feedback">
+          <i class="fas fa-exclamation-circle"></i> Name must be 3-20 characters
+        </div>
+        <div class="valid-feedback">
+          <i class="fas fa-check-circle"></i> Looks good!
+        </div>
+      </div>
+
+      <div class="mb-4 input-icon">
+        <label for="facultyEmail" class="form-label">Email</label>
+        <input type="email" class="form-control" id="facultyEmail" name="facultyEmail" 
+               pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" required>
+        <i class="fas fa-envelope"></i>
+        <div class="invalid-feedback">
+          <i class="fas fa-exclamation-circle"></i> Please enter a valid Gmail address (ending with @gmail.com)
+        </div>
+        <div class="valid-feedback">
+          <i class="fas fa-check-circle"></i> Valid Gmail address
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="department" class="form-label">Department</label>
+        <select class="form-select" id="department" name="department" required>
+          <option value="" selected disabled>Select Department</option>
+          <option value="CSE">CSE</option>
+          <option value="CSD">CSD</option>
+          <option value="IT"> IT</option>
+          <option value="CSM"> CSM</option>
+        </select>
+        <div class="invalid-feedback">
+          <i class="fas fa-exclamation-circle"></i> Please select your department
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="grievance" class="form-label">Grievance Details</label>
+        <textarea class="form-control" id="grievance" name="grievance" rows="5" 
+                  minlength="10" maxlength="500" required></textarea>
+        <div class="invalid-feedback">
+          <i class="fas fa-exclamation-circle"></i> Grievance must be at least 10 characters
+        </div>
+        <div class="char-counter" id="charCounter">
+          <span id="charCount">0</span>/500 characters
+        </div>
+        <div class="recommended-length">
+          <i class="fas fa-info-circle"></i> Minimum 10 characters required, but 50+ recommended for proper review
+        </div>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-submit">
+          <i class="fas fa-paper-plane me-2"></i>Submit Grievance
+        </button>
+      </div>
+    </form>
+    <div id="responseMessage" class="mt-4 text-center fw-semibold p-3 rounded"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('grievanceForm');
+    const responseMessage = document.getElementById('responseMessage');
+    const grievanceText = document.getElementById('grievance');
+    const charCount = document.getElementById('charCount');
+    const charCounter = document.getElementById('charCounter');
+    const emailInput = document.getElementById('facultyEmail');
+
+    // Character counter for grievance text
+    grievanceText.addEventListener('input', updateCharCount);
+    
+    function updateCharCount() {
+      const currentLength = grievanceText.value.length;
+      charCount.textContent = currentLength;
+      
+      if (currentLength < 10) {
+        charCounter.classList.add('error');
+        charCounter.classList.remove('warning');
+      } else if (currentLength < 50) {
+        charCounter.classList.add('warning');
+        charCounter.classList.remove('error');
+      } else {
+        charCounter.classList.remove('warning', 'error');
+      }
+    }
+
+    // Email validation for Gmail
+    emailInput.addEventListener('input', () => {
+      if (!emailInput.validity.valid) {
+        emailInput.classList.add('is-invalid');
+        emailInput.classList.remove('is-valid');
+      } else {
+        emailInput.classList.remove('is-invalid');
+        emailInput.classList.add('is-valid');
+      }
+    });
+
+    // Form validation
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Check form validity
+      if (!form.checkValidity()) {
+        e.stopPropagation();
+        form.classList.add('was-validated');
+        
+        // Add shake animation to invalid fields
+        document.querySelectorAll(':invalid').forEach(el => {
+          el.classList.add('shake');
+          setTimeout(() => el.classList.remove('shake'), 500);
+        });
+        
+        return;
+      }
+
+      // Additional manual validation for grievance length
+      if (grievanceText.value.length < 10) {
+        grievanceText.classList.add('is-invalid', 'shake');
+        grievanceText.setCustomValidity("Grievance must be at least 10 characters");
+        setTimeout(() => grievanceText.classList.remove('shake'), 500);
+        return;
+      }
+
+      // Clear any custom validity
+      grievanceText.setCustomValidity("");
+      
+      const formData = {
+        facultyName: form.facultyName.value,
+        facultyEmail: form.facultyEmail.value,
+        department: form.department.value,
+        grievance: form.grievance.value
+      };
+
+      try {
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        submitBtn.disabled = true;
+
+        // Make API call to backend
+        const response = await fetch('http://localhost:5000/submit-grievance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        // Show response message
+        responseMessage.style.display = 'block';
+        responseMessage.style.backgroundColor = response.ok ? 'rgba(25, 135, 84, 0.1)' : 'rgba(220, 53, 69, 0.1)';
+        responseMessage.style.color = response.ok ? 'var(--success-color)' : 'var(--error-color)';
+        responseMessage.innerHTML = `
+          <i class="fas ${response.ok ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+          ${data.message}
+        `;
+
+        if (response.ok) {
+          form.reset();
+          form.classList.remove('was-validated');
+          updateCharCount();
+        }
+      } catch (err) {
+        responseMessage.style.display = 'block';
+        responseMessage.innerHTML = `
+          <i class="fas fa-exclamation-circle me-2"></i>
+          An error occurred while submitting. Please try again.
+        `;
+        responseMessage.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+        responseMessage.style.color = 'var(--error-color)';
+      } finally {
+        // Reset button state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Grievance';
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Real-time validation feedback
+    form.addEventListener('input', (e) => {
+      if (e.target.validity.valid) {
+        e.target.classList.remove('is-invalid');
+        e.target.classList.add('is-valid');
+      } else {
+        e.target.classList.remove('is-valid');
+      }
+    });
+  </script>
+</body>
+</html>
+
+

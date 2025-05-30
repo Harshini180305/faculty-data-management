@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - FACULTECH</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #1e3c72;
+      --secondary-color: #2a5298;
+      --light-bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-dark: #333333;
+      --text-light: #666666;
+      --error-color: #e74c3c;
+      --success-color: #2ecc71;
+      --border-color: #e0e0e0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      background: var(--light-bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: var(--primary-color);
+      color: white;
+      height: 100vh;
+      position: fixed;
+      padding: 20px 0;
+      transition: width 0.3s;
+      z-index: 1000;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar li {
+      padding: 15px 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    .sidebar li:hover {
+      background: var(--secondary-color);
+    }
+
+    .sidebar li.active {
+      background: var(--secondary-color);
+    }
+
+    .sidebar li i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    #logoutBtn {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+    }
+
+    #logoutBtn:hover {
+      background: var(--error-color);
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      flex: 1;
+      transition: margin-left 0.3s;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: var(--card-bg);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    .header h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-box input {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+    }
+
+    .department-filter select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: var(--card-bg);
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .stat-card i {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 10px 0;
+    }
+
+    .stat-card .label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .chart-container h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 15px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-body {
+      padding: 15px;
+    }
+
+    .department-card .card-body {
+      text-align: center;
+    }
+
+    .department-card .icon i {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .department-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .department-card .count {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .faculty-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .faculty-item:last-child {
+      border-bottom: none;
+    }
+
+    .faculty-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+
+    .faculty-info h4 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
+    .faculty-info p {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .document-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .document-item {
+      background: var(--light-bg);
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .document-item i {
+      font-size: 1.2rem;
+      color: var(--primary-color);
+    }
+
+    .document-item span {
+      flex: 1;
+      font-size: 0.9rem;
+    }
+
+    .document-item a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .document-item a:hover {
+      text-decoration: underline;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(90vh - 60px);
+    }
+
+    .faculty-details {
+      display: flex;
+      gap: 20px;
+    }
+
+    .faculty-photo img {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .faculty-data {
+      flex: 1;
+    }
+
+    .detail-row {
+      margin-bottom: 15px;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+
+    .message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+      }
+
+      .sidebar h2, .sidebar li span {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 70px;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-row {
+        grid-template-columns: 1fr;
+      }
+
+      .faculty-details {
+        flex-direction: column;
+      }
+
+      .search-box input {
+        width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Admin Dashboard</h2>
+    <ul>
+      <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></li>
+      <li data-section="departments"><i class="fas fa-building"></i> <span>Departments</span></li>
+      <li data-section="faculty"><i class="fas fa-users"></i> <span>Faculty List</span></li>
+      <li data-section="certificates"><i class="fas fa-certificate"></i> <span>Certificates</span></li>
+      <li data-section="awards"><i class="fas fa-trophy"></i> <span>Awards</span></li>
+      <li data-section="researchPapers"><i class="fas fa-file-alt"></i> <span>Research Papers</span></li>
+      <li id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="section-content">
+      <div class="header">
+        <h3><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h3>
+        <div id="currentDate"></div>
+      </div>
+      <div class="stats-container">
+        <div class="stat-card">
+          <i class="fas fa-building"></i>
+          <div class="value" id="deptCount">0</div>
+          <div class="label">Departments</div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div class="value" id="facultyCount">0</div>
+          <div class="label">Faculty Members</div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-certificate"></i>
+          <div class="value" id="certCount">0</div>
+          <div class="label">Certificates</div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-trophy"></i>
+          <div class="value" id="awardCount">0</div>
+          <div class="label">Awards</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-container">
+          <h3>Faculty by Department</h3>
+          <canvas id="departmentChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Certificates & Awards</h3>
+          <canvas id="certAwardChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Departments Section -->
+    <div id="departments-section" class="section-content" style="display:none;">
+      <div class="header">
+        <h3><i class="fas fa-building"></i> Departments</h3>
+      </div>
+      <div class="card-container">
+        <div class="card department-card" data-dept="CSE">
+          <div class="card-body">
+            <div class="icon"><i class="fas fa-laptop-code"></i></div>
+            <h3>Computer Science</h3>
+            <div class="count" id="cseCount">0 Faculty</div>
+          </div>
+        </div>
+        <div class="card department-card" data-dept="CSM">
+          <div class="card-body">
+            <div class="icon"><i class="fas fa-mobile-alt"></i></div>
+            <h3>CS (Mobile)</h3>
+            <div class="count" id="csmCount">0 Faculty</div>
+          </div>
+        </div>
+        <div class="card department-card" data-dept="CSD">
+          <div class="card-body">
+            <div class="icon"><i class="fas fa-database"></i></div>
+            <h3>CS (Data)</h3>
+            <div class="count" id="csdCount">0 Faculty</div>
+          </div>
+        </div>
+        <div class="card department-card" data-dept="IT">
+          <div class="card-body">
+            <div class="icon"><i class="fas fa-network-wired"></i></div>
+            <h3>Information Tech</h3>
+            <div class="count" id="itCount">0 Faculty</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Faculty List Section -->
+    <div id="faculty-section" class="section-content" style="display:none;">
+      <div class="header">
+        <h3><i class="fas fa-users"></i> Faculty Members</h3>
+        <div class="search-container">
+          <div class="department-filter">
+            <select id="facultyDeptFilter">
+              <option value="">All Departments</option>
+              <option value="CSE">CSE</option>
+              <option value="CSM">CSM</option>
+              <option value="CSD">CSD</option>
+              <option value="IT">IT</option>
+            </select>
+          </div>
+          <div class="search-box">
+            <input type="text" id="facultySearch" placeholder="Search by name or email...">
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-list"></i> Faculty List
+        </div>
+        <div class="card-body" id="facultyList"></div>
+      </div>
+    </div>
+
+    <!-- Certificates Section -->
+    <div id="certificates-section" class="section-content" style="display:none;">
+      <div class="header">
+        <h3><i class="fas fa-certificate"></i> Certificates</h3>
+        <div class="department-filter">
+          <select id="certDeptFilter">
+            <option value="ALL">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="CSM">CSM</option>
+            <option value="CSD">CSD</option>
+            <option value="IT">IT</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-certificate"></i> Certificates
+        </div>
+        <div class="card-body" id="certificatesList"></div>
+      </div>
+    </div>
+
+    <!-- Awards Section -->
+    <div id="awards-section" class="section-content" style="display:none;">
+      <div class="header">
+        <h3><i class="fas fa-trophy"></i> Awards</h3>
+        <div class="department-filter">
+          <select id="awardDeptFilter">
+            <option value="ALL">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="CSM">CSM</option>
+            <option value="CSD">CSD</option>
+            <option value="IT">IT</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-trophy"></i> Awards
+        </div>
+        <div class="card-body" id="awardsList"></div>
+      </div>
+    </div>
+
+    <!-- Research Papers Section -->
+    <div id="researchPapers-section" class="section-content" style="display:none;">
+      <div class="header">
+        <h3><i class="fas fa-file-alt"></i> Research Papers</h3>
+        <div class="department-filter">
+          <select id="researchDeptFilter">
+            <option value="ALL">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="CSM">CSM</option>
+            <option value="CSD">CSD</option>
+            <option value="IT">IT</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-file-alt"></i> Research Papers
+        </div>
+        <div class="card-body" id="researchPapersList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Faculty Details Modal -->
+  <div class="modal" id="facultyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Faculty Details</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="facultyDetailsContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const sidebarLinks = document.querySelectorAll('.sidebar li:not(#logoutBtn)');
+    const sectionContents = document.querySelectorAll('.section-content');
+    const departmentCards = document.querySelectorAll('.department-card');
+    const facultyModal = document.getElementById('facultyModal');
+    const closeModalBtn = document.querySelector('.close-modal');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Global faculty data
+    let facultyData = [];
+
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/sampleloginfaculty.html';
+      }
+      return token;
+    }
+
+    // Show message
+    function showMessage(message, type) {
+      const mainContent = document.querySelector('.main-content');
+      const existingMessage = mainContent.querySelector('.message');
+      if (existingMessage) existingMessage.remove();
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = message;
+      mainContent.prepend(messageDiv);
+      setTimeout(() => messageDiv.remove(), 5000);
+    }
+
+    // Initialize Charts
+    function initCharts(facultyData) {
+      const deptCounts = { CSE: 0, CSM: 0, CSD: 0, IT: 0 };
+      
+      facultyData.forEach(faculty => {
+        if (faculty.department) {
+          const dept = faculty.department.toUpperCase();
+          if (dept === 'CSE') deptCounts.CSE++;
+          else if (dept === 'CSM') deptCounts.CSM++;
+          else if (dept === 'CSD') deptCounts.CSD++;
+          else if (dept === 'IT') deptCounts.IT++;
+        }
+      });
+      
+      document.getElementById('cseCount').textContent = `${deptCounts.CSE} Faculty`;
+      document.getElementById('csmCount').textContent = `${deptCounts.CSM} Faculty`;
+      document.getElementById('csdCount').textContent = `${deptCounts.CSD} Faculty`;
+      document.getElementById('itCount').textContent = `${deptCounts.IT} Faculty`;
+      document.getElementById('deptCount').textContent = Object.values(deptCounts).some(count => count > 0) ? 4 : 0;
+      document.getElementById('facultyCount').textContent = facultyData.length;
+      
+      let certCount = 0, awardCount = 0;
+      facultyData.forEach(faculty => {
+        certCount += Array.isArray(faculty.certsPaths) ? faculty.certsPaths.length : 0;
+        awardCount += Array.isArray(faculty.awardsCertPaths) ? faculty.awardsCertPaths.length : 0;
+      });
+      
+      document.getElementById('certCount').textContent = certCount;
+      document.getElementById('awardCount').textContent = awardCount;
+
+      const deptCtx = document.getElementById('departmentChart').getContext('2d');
+      new Chart(deptCtx, {
+        type: 'pie',
+        data: {
+          labels: ['CSE', 'CSM', 'CSD', 'IT'],
+          datasets: [{
+            data: [deptCounts.CSE, deptCounts.CSM, deptCounts.CSD, deptCounts.IT],
+            backgroundColor: ['#1e3c72', '#2a5298', '#2ecc71', '#f39c12'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'right' }
+          }
+        }
+      });
+
+      const certAwardCtx = document.getElementById('certAwardChart').getContext('2d');
+      new Chart(certAwardCtx, {
+        type: 'bar',
+        data: {
+          labels: ['CSE', 'CSM', 'CSD', 'IT'],
+          datasets: [
+            {
+              label: 'Certificates',
+              data: [
+                facultyData.filter(f => f.department?.toUpperCase() === 'CSE').reduce((sum, f) => sum + (Array.isArray(f.certsPaths) ? f.certsPaths.length : 0), 0),
+                facultyData.filter(f => f.department?.toUpperCase() === 'CSM').reduce((sum, f) => sum + (Array.isArray(f.certsPaths) ? f.certsPaths.length : 0), 0),
+                facultyData.filter(f => f.department?.toUpperCase() === 'CSD').reduce((sum, f) => sum + (Array.isArray(f.certsPaths) ? f.certsPaths.length : 0), 0),
+                facultyData.filter(f => f.department?.toUpperCase() === 'IT').reduce((sum, f) => sum + (Array.isArray(f.certsPaths) ? f.certsPaths.length : 0), 0)
+              ],
+              backgroundColor: '#1e3c72'
+            },
+            {
+              label: 'Awards',
+              data: [
+                facultyData.filter(f => f.department?.toUpperCase() === 'CSE').reduce((sum, f) => sum + (Array.isArray(f.awardsCertPaths) ? f.awardsCertPaths.length : 0), 0),
+                facultyData.filter(f => f.department?.toUpperCase() === 'CSM').reduce((sum, f) => sum + (Array.isArray(f.awardsCertPaths) ? f.awardsCertPaths.length : 0), 0),
+                facultyData.filter(f => f.department?.toUpperCase() === 'CSD').reduce((sum, f) => sum + (Array.isArray(f.awardsCertPaths) ? f.awardsCertPaths.length : 0), 0),
+                facultyData.filter(f => f.department?.toUpperCase() === 'IT').reduce((sum, f) => sum + (Array.isArray(f.awardsCertPaths) ? f.awardsCertPaths.length : 0), 0)
+              ],
+              backgroundColor: '#f39c12'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Count' } }
+          }
+        }
+      });
+    }
+
+    // Set current date
+    function setCurrentDate() {
+      const now = new Date();
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+
+    // Filter Faculty
+    function filterFaculty() {
+      const deptFilter = document.getElementById('facultyDeptFilter').value.toUpperCase();
+      const searchTerm = document.getElementById('facultySearch').value.toLowerCase();
+      const facultyListContainer = document.getElementById('facultyList');
+      
+      facultyListContainer.innerHTML = '<p>Loading faculty...</p>';
+      
+      const filteredFaculty = facultyData.filter(faculty => {
+        const matchesDept = !deptFilter || (faculty.department?.toUpperCase() === deptFilter);
+        const matchesSearch = !searchTerm ||
+          (faculty.name?.toLowerCase().includes(searchTerm)) ||
+          (faculty.email?.toLowerCase().includes(searchTerm));
+        return matchesDept && matchesSearch;
+      });
+      
+      facultyListContainer.innerHTML = '';
+      if (filteredFaculty.length === 0) {
+        facultyListContainer.innerHTML = '<p>No faculty members found.</p>';
+        return;
+      }
+      
+      filteredFaculty.forEach((faculty, index) => {
+        const facultyItem = document.createElement('div');
+        facultyItem.className = 'faculty-item';
+        facultyItem.innerHTML = `
+          <img src="/${faculty.photoPath || 'Uploads/default-user.png'}" alt="${faculty.name || 'Faculty'}" onerror="this.src='https://via.placeholder.com/50'">
+          <div class="faculty-info">
+            <h4>${faculty.name || 'N/A'}</h4>
+            <p>${faculty.email || 'No email'} • ${faculty.department || 'N/A'}</p>
+          </div>
+        `;
+        facultyItem.addEventListener('click', () => showFacultyDetails(faculty));
+        facultyListContainer.appendChild(facultyItem);
+      });
+    }
+
+    // Filter Certificates
+    async function filterCertificates() {
+      const deptFilter = document.getElementById('certDeptFilter').value;
+      const certificatesContainer = document.getElementById('certificatesList');
+      certificatesContainer.innerHTML = '<p>Loading certificates...</p>';
+
+      try {
+        const token = checkAuth();
+        const response = await fetch(`http://localhost:5000/api/faculty-documents?department=${encodeURIComponent(deptFilter)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        
+        certificatesContainer.innerHTML = '';
+        if (!Array.isArray(data) || data.length === 0) {
+          certificatesContainer.innerHTML = '<p>No certificates found.</p>';
+          return;
+        }
+
+        let hasCerts = false;
+        const certTitlesMap = new Map();
+        data.forEach(faculty => {
+          if (faculty.certs && Array.isArray(faculty.certsPaths)) {
+            const titles = faculty.certs.split(',').map(t => t.trim());
+            titles.forEach((title, i) => certTitlesMap.set(faculty.certsPaths[i], title));
+          }
+        });
+
+        data.forEach(faculty => {
+          if (Array.isArray(faculty.certsPaths) && faculty.certsPaths.length > 0) {
+            hasCerts = true;
+            const div = document.createElement('div');
+            div.className = 'faculty-document-group';
+            div.innerHTML = `
+              <h4>${faculty.name || 'N/A'} (${faculty.department || 'N/A'})</h4>
+              <div class="document-items">
+                ${faculty.certsPaths.map((path, i) => `
+                  <div class="document-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>${certTitlesMap.get(path) || `Certificate ${i+1}`}</span>
+                    <a href="/${path}" target="_blank">View</a>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            certificatesContainer.appendChild(div);
+          }
+        });
+
+        if (!hasCerts) certificatesContainer.innerHTML = '<p>No certificates found.</p>';
+      } catch (error) {
+        console.error('Error loading certificates:', error);
+        certificatesContainer.innerHTML = '<p>Error loading certificates.</p>';
+        if (error.message.includes('401')) {
+          localStorage.removeItem('token');
+          window.location.href = '/sampleloginfaculty.html';
+        }
+      }
+    }
+
+    // Filter Awards
+    async function filterAwards() {
+      const deptFilter = document.getElementById('awardDeptFilter').value;
+      const awardsContainer = document.getElementById('awardsList');
+      awardsContainer.innerHTML = '<p>Loading awards...</p>';
+
+      try {
+        const token = checkAuth();
+        const response = await fetch(`http://localhost:5000/api/faculty-documents?department=${encodeURIComponent(deptFilter)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        
+        awardsContainer.innerHTML = '';
+        if (!Array.isArray(data) || data.length === 0) {
+          awardsContainer.innerHTML = '<p>No awards found.</p>';
+          return;
+        }
+
+        let hasAwards = false;
+        const awardTitlesMap = new Map();
+        data.forEach(faculty => {
+          if (faculty.awards && Array.isArray(faculty.awardsCertPaths)) {
+            const titles = faculty.awards.split(',').map(t => t.trim());
+            titles.forEach((title, i) => awardTitlesMap.set(faculty.awardsCertPaths[i], title));
+          }
+        });
+
+        data.forEach(faculty => {
+          if (Array.isArray(faculty.awardsCertPaths) && faculty.awardsCertPaths.length > 0) {
+            hasAwards = true;
+            const div = document.createElement('div');
+            div.className = 'faculty-document-group';
+            div.innerHTML = `
+              <h4>${faculty.name || 'N/A'} (${faculty.department || 'N/A'})</h4>
+              <div class="document-items">
+                ${faculty.awardsCertPaths.map((path, i) => `
+                  <div class="document-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>${awardTitlesMap.get(path) || `Award ${i+1}`}</span>
+                    <a href="/${path}" target="_blank">View</a>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            awardsContainer.appendChild(div);
+          }
+        });
+
+        if (!hasAwards) awardsContainer.innerHTML = '<p>No awards found.</p>';
+      } catch (error) {
+        console.error('Error loading awards:', error);
+        awardsContainer.innerHTML = '<p>Error loading awards.</p>';
+        if (error.message.includes('401')) {
+          localStorage.removeItem('token');
+          window.location.href = '/sampleloginfaculty.html';
+        }
+      }
+    }
+
+    // Filter Research Papers
+    async function filterResearchPapers() {
+      const deptFilter = document.getElementById('researchDeptFilter').value;
+      const researchContainer = document.getElementById('researchPapersList');
+      researchContainer.innerHTML = '<p>Loading research papers...</p>';
+
+      try {
+        const token = checkAuth();
+        const response = await fetch(`http://localhost:5000/api/faculty-documents?department=${encodeURIComponent(deptFilter)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        
+        researchContainer.innerHTML = '';
+        if (!Array.isArray(data) || data.length === 0) {
+          researchContainer.innerHTML = '<p>No research papers found.</p>';
+          return;
+        }
+
+        let hasPapers = false;
+        data.forEach(faculty => {
+          if (Array.isArray(faculty.researchPapers) && faculty.researchPapers.length > 0) {
+            hasPapers = true;
+            const div = document.createElement('div');
+            div.className = 'faculty-document-group';
+            div.innerHTML = `
+              <h4>${faculty.name || 'N/A'} (${faculty.department || 'N/A'})</h4>
+              <div class="document-items">
+                ${faculty.researchPapers.map((path, i) => `
+                  <div class="document-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Paper ${i+1}</span>
+                    <a href="/${path}" target="_blank">View</a>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            researchContainer.appendChild(div);
+          }
+        });
+
+        if (!hasPapers) researchContainer.innerHTML = '<p>No research papers found.</p>';
+      } catch (error) {
+        console.error('Error loading research papers:', error);
+        researchContainer.innerHTML = '<p>Error loading research papers.</p>';
+        if (error.message.includes('401')) {
+          localStorage.removeItem('token');
+          window.location.href = '/sampleloginfaculty.html';
+        }
+      }
+    }
+
+    // Show Faculty Details
+    function showFacultyDetails(faculty) {
+      const certTitles = faculty.certs ? faculty.certs.split(',').map(t => t.trim()) : [];
+      const awardTitles = faculty.awards ? faculty.awards.split(',').map(t => t.trim()) : [];
+      const modalContent = document.getElementById('facultyDetailsContent');
+      modalContent.innerHTML = `
+        <div class="faculty-details">
+          <div class="faculty-photo">
+            <img src="/${faculty.photoPath || 'Uploads/default-user.png'}" alt="${faculty.name || 'Faculty'}" onerror="this.src='https://via.placeholder.com/200'">
+          </div>
+          <div class="faculty-data">
+            <h2>${faculty.name || 'N/A'}</h2>
+            <p><strong>${faculty.department || 'N/A'}</strong></p>
+            <div class="detail-row">
+              <div class="detail-label">Contact</div>
+              <p>Email: ${faculty.email || 'N/A'}</p>
+              <p>Phone: ${faculty.phone || 'N/A'}</p>
+            </div>
+            ${faculty.experience ? `
+            <div class="detail-row">
+              <div class="detail-label">Experience</div>
+              <p>${faculty.experience} years</p>
+            </div>` : ''}
+            ${faculty.phdStatus ? `
+            <div class="detail-row">
+              <div class="detail-label">PhD Status</div>
+              <p>${faculty.phdStatus}${faculty.phdDetails ? `: ${faculty.phdDetails}` : ''}</p>
+            </div>` : ''}
+            ${Array.isArray(faculty.certsPaths) && faculty.certsPaths.length > 0 ? `
+            <div class="detail-row">
+              <div class="detail-label">Certificates</div>
+              <div class="document-items">
+                ${faculty.certsPaths.map((path, i) => `
+                  <div class="document-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>${certTitles[i] || `Certificate ${i+1}`}</span>
+                    <a href="/${path}" target="_blank">View</a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+            ${Array.isArray(faculty.awardsCertPaths) && faculty.awardsCertPaths.length > 0 ? `
+            <div class="detail-row">
+              <div class="detail-label">Awards</div>
+              <div class="document-items">
+                ${faculty.awardsCertPaths.map((path, i) => `
+                  <div class="document-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>${awardTitles[i] || `Award ${i+1}`}</span>
+                    <a href="/${path}" target="_blank">View</a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+            ${Array.isArray(faculty.researchPapers) && faculty.researchPapers.length > 0 ? `
+            <div class="detail-row">
+              <div class="detail-label">Research Papers</div>
+              <div class="document-items">
+                ${faculty.researchPapers.map((path, i) => `
+                  <div class="document-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Paper ${i+1}</span>
+                    <a href="/${path}" target="_blank">View</a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+          </div>
+        </div>
+      `;
+      facultyModal.style.display = 'flex';
+    }
+
+    // Load Faculty Data
+    async function loadFacultyData() {
+      try {
+        const token = checkAuth();
+        const response = await fetch('http://localhost:5000/api/faculty', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        facultyData = await response.json();
+        
+        if (!Array.isArray(facultyData)) {
+          throw new Error('Invalid data format');
+        }
+
+        initCharts(facultyData);
+        filterFaculty();
+        filterCertificates();
+        filterAwards();
+        filterResearchPapers();
+      } catch (error) {
+        console.error('Error fetching faculty data:', error);
+        showMessage('Failed to load faculty data.', 'error');
+        if (error.message.includes('401')) {
+          localStorage.removeItem('token');
+          window.location.href = '/sampleloginfaculty.html';
+        }
+      }
+    }
+
+    // Switch Sections
+    function switchSection(sectionId) {
+      sectionContents.forEach(section => section.style.display = 'none');
+      document.getElementById(`${sectionId}-section`).style.display = 'block';
+      
+      sidebarLinks.forEach(link => link.classList.remove('active'));
+      document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      setCurrentDate();
+      loadFacultyData();
+
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          const section = link.getAttribute('data-section');
+          switchSection(section);
+        });
+      });
+
+      departmentCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const dept = card.getAttribute('data-dept');
+          document.getElementById('facultyDeptFilter').value = dept;
+          document.getElementById('certDeptFilter').value = dept;
+          document.getElementById('awardDeptFilter').value = dept;
+          document.getElementById('researchDeptFilter').value = dept;
+          switchSection('faculty');
+          filterFaculty();
+        });
+      });
+
+      document.getElementById('facultySearch').addEventListener('input', filterFaculty);
+      document.getElementById('facultyDeptFilter').addEventListener('change', filterFaculty);
+      document.getElementById('certDeptFilter').addEventListener('change', filterCertificates);
+      document.getElementById('awardDeptFilter').addEventListener('change', filterAwards);
+      document.getElementById('researchDeptFilter').addEventListener('change', filterResearchPapers);
+
+      closeModalBtn.addEventListener('click', () => facultyModal.style.display = 'none');
+      facultyModal.addEventListener('click', e => {
+        if (e.target === facultyModal) facultyModal.style.display = 'none';
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        window.location.href = '/sampleloginfaculty.html';
+      });
+    });
+  </script>
+</body>
+</html>

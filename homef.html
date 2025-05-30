@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaculTech - Home</title>
+    
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color:antiquewhite;
+        }
+        p
+        {
+            font-style:italic;
+            text-align: center;
+        }
+        .navbar {
+            background: #2e2c50;
+            padding: 15px;
+        }
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        .nav-link, .login-btn {
+            color: white !important;
+            padding-right: 10px;
+            margin-right: 10px;
+        }
+        .carousel-item img {
+            width: 100%;
+            padding-left: 100px;
+            padding-right: 100px;
+            height: 350px;
+            object-fit: cover;
+        }
+        .btn-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .btn-section button {
+            width: 180px;
+            height: 60px;
+            border-radius: 30px;
+            background: #3498DB;
+            color: white;
+            font-size: 18px;
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-section button:hover {
+            background: #1F618D;
+        }
+        .info-section {
+            text-align: center;
+            margin: 50px 20px;
+        }
+        .info-section h2 {
+            color: #2C3E50;
+        }
+        .social-icons img {
+                width: 50px;
+                height: 50px;
+                margin: 0 10px; 
+                object-fit: cover; 
+                background-color: white;
+                padding: 5px;/*logos fit comfortably */
+                border-radius: 5px;
+                border:none;
+                margin-bottom:30px;
+            }
+            .social-icons {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+            }
+            footer
+            {
+                background-color:rgb(2, 55, 120) ;
+            }
+            .profile-btn {
+                background-color:white;
+                border: none;
+                color: white;
+                font-size: 1.2rem;
+                cursor: pointer;
+                padding: 2px 5px;
+                margin-left: 15px;
+                /*padding-bottom: 2px;
+                padding-right: 2px;
+                padding-left: 2px;*/
+            }
+            .profile-btn:hover {
+                color: #ccc;
+            }
+            h2
+            {
+                color: maroon;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="homef.html">FaculTech👨‍🎓</a>
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="aboutf.html">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-success login-btn" href="sampleloginfaculty.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-success login-btn" href="registerf.html">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br>
+    <!-- Info Section -->
+    <div class="info-section">
+        <h2 style="color: maroon;">Welcome to FaculTech</h2>
+        <p>An advanced faculty management system that simplifies faculty data handling, authentication, and accreditation tracking.</p>
+    </div>
+    <marquee behavior="scroll" direction="left" style="background:aquamarine; color:black; padding: 10px; font-size: 18px;">
+        📢 Welcome to FaculTech! Stay updated with the latest faculty management system features.
+    </marquee>
+    <br>
+    <br>
+    <!-- Carousel -->
+    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="img f1.png" alt="Slide 1">
+            </div>
+            <div class="carousel-item">
+                <img src="img f3.png" alt="Slide 2">
+            </div>
+            <div class="carousel-item">
+                <img src="img f4.png" alt="Slide 3">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+    <!--<div class="container my-5">
+        <h2 class="text-center mb-4">📢 Recent Announcements</h2>
+        <ul class="list-group">
+            <li class="list-group-item">🎓 Deadline for faculty profile updates is April 25th, 2025.</li>
+            <li class="list-group-item">📄 New document format for AICTE audit now available.</li>
+            <li class="list-group-item">💼 Webinar on “Faculty Digital Records” this Saturday.</li>
+        </ul>
+    </div>-->
+    <br>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Why Choose FaculTech?</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Centralized Data Storage</h5>
+                        <p class="card-text">Easily store and manage all faculty records, documents, and credentials in one place.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">Accreditation Support</h5>
+                        <p class="card-text">Track and maintain compliance with NBA, NAAC, and AICTE standards for smooth audits.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">Document Uploads</h5>
+                        <p class="card-text">Allow faculty to upload resumes, certificates, and proof of achievements securely.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 
+    <div class="btn-section">
+        <a href="registerf.html"><button>Register</button></a>
+        <a href="loginfpage.html"><button>Login</button></a>
+        <a href="nbapage.html"><button>NBA & NAAC</button></a>
+    </div>-->
+    
+        <div class="container my-5">
+            <div class="row">
+                <!-- NBA Box -->
+                <div class="container my-5">
+                    <div class="row">
+                        <!-- NBA Box -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <img src="nbaicon.png" class="card-img-top" alt="NBA Logo" style="height:150px; object-fit:contain; padding:20px;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center" style="color:maroon">National Board of Accreditation (NBA)</h5>
+                                    <p class="card-text">NBA accredits technical programs that meet quality standards and promote excellence in engineering and technical education. It ensures institutions meet industry-relevant competencies and continuous improvement.</p>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- NAAC Box -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <img src="naacicon.png" class="card-img-top" alt="NAAC Logo" style="height:150px; object-fit:contain; padding:20px;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center" style="color: maroon;">National Assessment and Accreditation Council (NAAC)</h5>
+                                    <p class="card-text">NAAC evaluates higher education institutions for their quality in terms of curriculum, faculty, infrastructure, research, and innovation, aiming to uplift the overall standards of education in India.</p>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- AICTE Box -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <img src="aicte icon.png" class="card-img-top" alt="AICTE Logo" style="height:150px; object-fit:contain; padding:20px;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center" style="color: maroon;">All India Council for Technical Education (AICTE)</h5>
+                                    <p class="card-text">AICTE is the national-level apex advisory body for technical education in India. It ensures proper planning and coordinated development of technical education across the country through regulation and accreditation.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    <footer>
+        <br>
+        <p style="color: white;">&copy; Faculty Management system Website. All rights reserved.</p>
+        <!--<div class="social-icons">
+            <a href="https://www.facebook.com/">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+            </a>
+            <a href="https://twitter.com/">
+                <img src="Fimages/xicon.jpeg" alt="X">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+            </a>
+            <a href="https://www.youtube.com/">
+                <img src="Fimages/yticon.png" alt="YouTube">
+            </a>
+            <a href="https://www.google.com/">
+                <img src="Fimages/gicon.png" alt="Google">
+            </a>-->
+            <br>
+    </footer>
+</body>
+</html>
+
+

@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOD Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2c3e50;
+      --light-color: #ecf0f1;
+      --dark-color: #34495e;
+      --success-color: #2ecc71;
+      --warning-color: #f39c12;
+      --danger-color: #e74c3c;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: var(--secondary-color);
+      color: white;
+      height: 100vh;
+      position: fixed;
+      padding: 20px 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      padding: 15px 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar li:hover {
+      background: var(--dark-color);
+    }
+
+    .sidebar li.active {
+      background: var(--primary-color);
+    }
+
+    .sidebar li i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    .header h3 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .header h3 i {
+      margin-right: 10px;
+    }
+
+    .profile-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .profile-btn:hover {
+      background: var(--dark-color);
+    }
+
+    .profile-btn i {
+      margin-right: 5px;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card i {
+      font-size: 1.5em;
+      color: var(--primary-color);
+    }
+
+    .stat-card .value {
+      font-size: 2em;
+      font-weight: bold;
+      margin: 10px 0;
+      color: var(--primary-color);
+    }
+
+    .stat-card .label {
+      color: #666;
+    }
+
+    .stat-trend {
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+
+    .stat-trend.up {
+      color: var(--success-color);
+    }
+
+    .stat-trend.down {
+      color: var(--danger-color);
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .chart-title {
+      margin-top: 0;
+      color: var(--secondary-color);
+      font-size: 1.2em;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 15px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+
+    .card-header i {
+      margin-right: 10px;
+    }
+
+    .card-body {
+      padding: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: var(--light-color);
+      color: var(--secondary-color);
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+    }
+
+    .action-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .action-btn:hover {
+      background: var(--dark-color);
+    }
+
+    .views-container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .view-pill {
+      background: var(--light-color);
+      color: var(--secondary-color);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .view-pill.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .view-pill:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .delete-view {
+      margin-left: 5px;
+      color: var(--danger-color);
+      cursor: pointer;
+    }
+
+    .view-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .field-checkbox {
+      background: #f9f9f9;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .field-checkbox input {
+      margin-right: 5px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--dark-color);
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(90vh - 100px);
+    }
+
+    .faculty-details {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .faculty-photo {
+      width: 150px;
+      height: 150px;
+      border: 3px solid var(--primary-color);
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .faculty-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .faculty-data {
+      width: 100%;
+    }
+
+    .profile-section {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .profile-section h3 {
+      color: var(--secondary-color);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .profile-section h3 i {
+      margin-right: 10px;
+    }
+
+    .profile-section p {
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+
+    .certificate-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      margin-right: 10px;
+    }
+
+    .certificate-link:hover {
+      text-decoration: underline;
+    }
+
+    .document-image {
+      max-width: 100px;
+      max-height: 100px;
+      margin-top: 5px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .document-image:hover {
+      transform: scale(1.05);
+    }
+
+    .document-error {
+      color: var(--danger-color);
+      font-size: 0.75rem;
+    }
+
+    .profile-details {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .profile-info h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .profile-info p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border: 2px solid white;
+      border-radius: 8px;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .faculty-detail {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .faculty-avatar {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .faculty-info {
+      flex: 1;
+    }
+
+    .faculty-info h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+    }
+
+    .faculty-meta {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .detail-card {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .detail-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .detail-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .detail-card p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+        overflow: hidden;
+      }
+
+      .sidebar li span {
+        display: none;
+      }
+
+      .sidebar h2 {
+        font-size: 1.2em;
+      }
+
+      .main-content {
+        margin-left: 70px;
+      }
+
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .chart-row {
+        grid-template-columns: 1fr;
+      }
+
+      .faculty-details {
+        flex-direction: column;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>HOD Dashboard</h2>
+    <ul>
+      <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></li>
+      <li data-section="faculty"><i class="fas fa-users"></i> <span>Faculty</span></li>
+      <li data-section="certifications"><i class="fas fa-certificate"></i> <span>Certifications</span></li>
+      <li data-section="awards"><i class="fas fa-trophy"></i> <span>Awards</span></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div id="dashboard-content" class="content-section active">
+      <div class="header">
+        <h3><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h3>
+        <div>
+          <span id="current-date"></span>
+          <button id="profile-btn" class="profile-btn"><i class="fas fa-user"></i> Profile</button>
+        </div>
+      </div>
+
+      <div class="stats-container">
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div class="value" id="total-faculty">0</div>
+          <div class="label">Total Faculty</div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-user-plus"></i>
+          <div class="value" id="new-faculty">0</div>
+          <div class="label">New Faculty</div>
+          <div class="stat-trend" id="new-faculty-trend"></div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-certificate"></i>
+          <div class="value" id="total-certifications">0</div>
+          <div class="label">Total Certifications</div>
+          <div class="stat-trend"></div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-trophy"></i>
+          <div class="value" id="total-awards">0</div>
+          <div class="label">Total Awards</div>
+          <div class="stat-trend"></div>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-container">
+          <h3 class="chart-title">Faculty Experience Distribution</h3>
+          <canvas id="experience-distribution-chart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3 class="chart-title">PhD Status Breakdown</h3>
+          <canvas id="phd-status-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div id="faculty-content" class="content-section" style="display: none;">
+      <div class="header">
+        <h3><i class="fas fa-users"></i> Faculty Overview</h3>
+        <div>
+          <input type="text" id="faculty-search" placeholder="Search Faculty...">
+          <button id="download-btn" class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
+          <button id="create-view-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Create View</button>
+        </div>
+      </div>
+
+      <div class="views-container" id="views-container"></div>
+
+      <div class="view-fields" id="view-fields"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-list"></i> Faculty List
+        </div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr id="faculty-table-head"></tr>
+            </thead>
+            <tbody id="faculty-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="certifications-content" class="content-section" style="display: none;">
+      <div class="header">
+        <h3><i class="fas fa-certificate"></i> Certifications Overview</h3>
+        <div>
+          <select id="certifications-period">
+            <option value="year">This Year</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-list"></i> Certifications List
+        </div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr>
+                <th>Faculty Name</th>
+                <th>Certification Title</th>
+                <th>Year</th>
+                <th>Document</th>
+              </tr>
+            </thead>
+            <tbody id="certifications-table-body"></tbody>
+          </table>
+          <div id="no-certifications-message" style="display: none; text-align: center; padding: 10px; color: #666;">
+            No certifications available.
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3 class="chart-title">Certifications Over Time</h3>
+        <canvas id="certifications-chart"></canvas>
+      </div>
+    </div>
+
+    <div id="awards-content" class="content-section" style="display: none;">
+      <div class="header">
+        <h3><i class="fas fa-trophy"></i> Awards Overview</h3>
+        <div>
+          <select id="awards-period">
+            <option value="year">This Year</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-list"></i> Awards List
+        </div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr>
+                <th>Faculty Name</th>
+                <th>Award Title</th>
+                <th>Year</th>
+                <th>Document</th>
+              </tr>
+            </thead>
+            <tbody id="awards-table-body"></tbody>
+          </table>
+          <div id="no-awards-message" style="display: none; text-align: center; padding: 10px; color: #666;">
+            No awards available.
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3 class="chart-title">Awards Over Time</h3>
+        <canvas id="awards-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="faculty-details-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Faculty Details</h3>
+        <button class="close-btn">×</button>
+      </div>
+      <div class="modal-body" id="faculty-details-content"></div>
+    </div>
+  </div>
+
+  <div id="profile-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>HOD Profile</h3>
+        <button class="close-btn">×</button>
+      </div>
+      <div class="modal-body" id="profile-modal-content">
+        <div class="profile-details">
+          <div class="profile-avatar" id="profile-avatar"></div>
+          <div class="profile-info">
+            <h3 id="profile-name"></h3>
+            <p id="profile-email"></p>
+            <p id="profile-department"></p>
+            <button id="logout-btn" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="create-view-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create New View</h3>
+        <button class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label for="view-name">View Name:</label>
+          <input type="text" id="view-name" placeholder="Enter view name" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        </div>
+        <h4>Select Fields</h4>
+        <div id="view-fields-create" class="view-fields"></div>
+        <button id="save-view-btn" class="btn btn-primary" style="margin-top: 10px;">Save View</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="lightbox" class="lightbox">
+    <span class="lightbox-close">×</span>
+    <img id="lightbox-image" src="">
+  </div>
+
+<script>
+let facultyData = [];
+let currentViewFields = ['name', 'email', 'experience'];
+let savedViews = JSON.parse(localStorage.getItem('savedViews')) || [
+  { name: 'Default View', fields: ['name', 'email', 'experience'] }
+];
+let experienceChart = null;
+let phdStatusChart = null;
+let certificationsChart = null;
+let awardsChart = null;
+
+const sidebarItems = document.querySelectorAll('.sidebar li');
+const contentSections = document.querySelectorAll('.content-section');
+const profileBtn = document.getElementById('profile-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const facultyDetailsModal = document.getElementById('faculty-details-modal');
+const profileModal = document.getElementById('profile-modal');
+const createViewModal = document.getElementById('create-view-modal');
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightbox-image');
+const facultySearch = document.getElementById('faculty-search');
+const certificationsPeriod = document.getElementById('certifications-period');
+const awardsPeriod = document.getElementById('awards-period');
+const downloadBtn = document.getElementById('download-btn');
+const createViewBtn = document.getElementById('create-view-btn');
+const saveViewBtn = document.getElementById('save-view-btn');
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeDashboard();
+  setupEventListeners();
+  loadFacultyData();
+});
+
+function initializeDashboard() {
+  updateCurrentDate();
+
+  const hodUsername = localStorage.getItem('hodUsername');
+  const department = localStorage.getItem('hodDepartment');
+  if (!hodUsername || !department) {
+    console.error('HOD username or department not found in localStorage', { hodUsername, department });
+    alert('Please log in as HOD');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  fetch(`http://localhost:5000/api/hod/${hodUsername}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`Failed to fetch HOD details: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById('profile-name').textContent = data.name || 'HOD';
+      document.getElementById('profile-email').textContent = data.username;
+      document.getElementById('profile-department').textContent = `Department: ${data.department || 'Not provided'}`;
+      document.getElementById('profile-avatar').textContent = data.name.charAt(0).toUpperCase();
+    })
+    .catch(error => {
+      console.error('Error fetching HOD details:', error);
+      alert(`Error loading HOD profile: ${error.message}`);
+    });
+}
+
+function setupEventListeners() {
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', () => switchSection(item.dataset.section));
+  });
+
+  document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', closeModal);
+  });
+
+  profileBtn.addEventListener('click', openProfileModal);
+  logoutBtn.addEventListener('click', logout);
+  lightbox.addEventListener('click', closeLightbox);
+  facultySearch.addEventListener('input', filterFaculty);
+  certificationsPeriod.addEventListener('change', loadCertifications);
+  awardsPeriod.addEventListener('change', loadAwards);
+  downloadBtn.addEventListener('click', downloadFacultyData);
+  createViewBtn.addEventListener('click', openCreateViewModal);
+  saveViewBtn.addEventListener('click', saveNewView);
+
+  // Set default period to "all" to ensure all data is shown initially
+  certificationsPeriod.value = 'all';
+  awardsPeriod.value = 'all';
+}
+
+function updateCurrentDate() {
+  const date = new Date();
+  document.getElementById('current-date').textContent = date.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  }) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+function switchSection(section) {
+  sidebarItems.forEach(item => item.classList.remove('active'));
+  contentSections.forEach(content => content.style.display = 'none');
+
+  document.querySelector(`.sidebar li[data-section="${section}"]`).classList.add('active');
+  document.getElementById(`${section}-content`).style.display = 'block';
+
+  if (section === 'faculty') {
+    loadFacultyData();
+  } else if (section === 'certifications') {
+    loadCertifications();
+  } else if (section === 'awards') {
+    loadAwards();
+  }
+}
+
+async function loadFacultyData() {
+  try {
+    const hodUsername = localStorage.getItem('hodUsername');
+    const department = localStorage.getItem('hodDepartment');
+
+    if (!hodUsername || !department) {
+      console.error('HOD username or department not found in localStorage', { hodUsername, department });
+      alert('Please log in as HOD');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    console.log(`Requesting faculty data for department: ${department}, HOD username: ${hodUsername}`);
+    const response = await fetch(`http://localhost:5000/api/faculty/department/${department}?username=${hodUsername}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch faculty data: ${response.status} - ${errorData.error || 'Unknown error'}`);
+    }
+    facultyData = await response.json();
+    console.log('Fetched faculty data:', JSON.stringify(facultyData, null, 2));
+
+    // If API returns empty or no certifications/awards, use sample data for testing
+    if (!facultyData || facultyData.length === 0 || !facultyData.some(f => (f.certs && f.certs.trim()) || (f.awards && f.awards.trim()))) {
+      console.warn('No valid certifications or awards found in API response, using sample data for testing');
+      facultyData = [
+        {
+          name: "John Doe",
+          email: "john@example.com",
+          certs: "Java Certification,Python Certification",
+          certYears: "2023,2025",
+          certsPaths: ["uploads/cert1.jpg", "uploads/cert2.jpg"],
+          awards: "Best Teacher Award,Research Excellence",
+          awardYears: "2024,2025",
+          awardsCertPaths: ["uploads/award1.jpg", "uploads/award2.jpg"],
+          joinDate: new Date().toISOString(),
+          experience: 5,
+          phdStatus: "Completed",
+          department: department,
+          phone: "1234567890",
+          dob: "1980-01-01",
+          gender: "Male",
+          aadhar: "1234-5678-9012",
+          aadharPath: "uploads/aadhar1.pdf",
+          pan: "ABCDE1234F",
+          panPath: "uploads/pan1.pdf",
+          sscSchool: "High School",
+          sscBoard: "CBSE",
+          sscPercent: 85,
+          sscYear: 1995,
+          sscCertPath: "uploads/ssc1.pdf",
+          interCollege: "Junior College",
+          interPercent: 90,
+          interYear: 1997,
+          interCertPath: "uploads/inter1.pdf",
+          degCollege: "Tech University",
+          degBranch: "Computer Science",
+          degCGPA: 8.5,
+          degYear: 2001,
+          degCertPath: "uploads/deg1.pdf",
+          research: "AI Research",
+          researchPapers: ["uploads/paper1.pdf"],
+          conferences: [{ type: "International", name: "AI Conf", organizedBy: "IEEE", isbn: "123-456" }],
+          conferenceCerts: ["uploads/conf1.pdf"]
+        },
+        {
+          name: "Jane Smith",
+          email: "jane@example.com",
+          certs: "AWS Certification",
+          certYears: "2025",
+          certsPaths: ["uploads/cert3.jpg"],
+          awards: "",
+          awardYears: "",
+          awardsCertPaths: [],
+          joinDate: new Date().toISOString(),
+          experience: 3,
+          phdStatus: "Pursuing",
+          department: department,
+          phone: "0987654321",
+          dob: "1985-02-02",
+          gender: "Female",
+          aadhar: "9876-5432-1098",
+          aadharPath: "uploads/aadhar2.pdf",
+          pan: "XYZAB5678C",
+          panPath: "uploads/pan2.pdf",
+          sscSchool: "City School",
+          sscBoard: "State",
+          sscPercent: 88,
+          sscYear: 2000,
+          sscCertPath: "uploads/ssc2.pdf",
+          interCollege: "City College",
+          interPercent: 92,
+          interYear: 2002,
+          interCertPath: "uploads/inter2.pdf",
+          degCollege: "Tech Institute",
+          degBranch: "Electronics",
+          degCGPA: 9.0,
+          degYear: 2006,
+          degCertPath: "uploads/deg2.pdf",
+          research: "ML Applications",
+          researchPapers: [],
+          conferences: [],
+          conferenceCerts: []
+        }
+      ];
+    }
+
+    // Normalize faculty data
+    facultyData = facultyData.map(faculty => ({
+      ...faculty,
+      joinDate: faculty.joinDate || new Date().toISOString(),
+      experience: faculty.experience || 0,
+      phdStatus: faculty.phdStatus || "Not Pursuing",
+      certs: faculty.certs || "",
+      certYears: faculty.certYears != null ? String(faculty.certYears) : (faculty.certs && faculty.certs.trim() ? Array(faculty.certs.split(',').length).fill(new Date().getFullYear()).join(',') : ''),
+      certsPaths: faculty.certsPaths && Array.isArray(faculty.certsPaths) ? faculty.certsPaths : (faculty.certs && faculty.certs.trim() ? Array(faculty.certs.split(',').length).fill('uploads/placeholder.pdf') : []),
+      awards: faculty.awards || "",
+      awardYears: faculty.awardYears != null ? String(faculty.awardYears) : (faculty.awards && faculty.awards.trim() ? Array(faculty.awards.split(',').length).fill(new Date().getFullYear()).join(',') : ''),
+      awardsCertPaths: faculty.awardsCertPaths && Array.isArray(faculty.awardsCertPaths) ? faculty.awardsCertPaths : (faculty.awards && faculty.awards.trim() ? Array(faculty.awards.split(',').length).fill('uploads/placeholder.pdf') : []),
+    }));
+
+    console.log('Processed faculty data:', JSON.stringify(facultyData, null, 2));
+
+    updateDashboardStats();
+    renderFacultyTable();
+    renderViews();
+    setupExperienceChart();
+    setupPhdStatusChart();
+    loadCertifications();
+    loadAwards();
+  } catch (error) {
+    console.error('Error loading faculty data:', error);
+    alert(`Error loading faculty data: ${error.message}`);
+
+    const department = localStorage.getItem('hodDepartment');
+    facultyData = [
+      {
+        name: "John Doe",
+        email: "john@example.com",
+        certs: "Java Certification,Python Certification",
+        certYears: "2023,2025",
+        certsPaths: ["uploads/cert1.jpg", "uploads/cert2.jpg"],
+        awards: "Best Teacher Award,Research Excellence",
+        awardYears: "2024,2025",
+        awardsCertPaths: ["uploads/award1.jpg", "uploads/award2.jpg"],
+        joinDate: new Date().toISOString(),
+        experience: 5,
+        phdStatus: "Completed",
+        department: department,
+        phone: "1234567890",
+        dob: "1980-01-01",
+        gender: "Male",
+        aadhar: "1234-5678-9012",
+        aadharPath: "uploads/aadhar1.pdf",
+        pan: "ABCDE1234F",
+        panPath: "uploads/pan1.pdf",
+        sscSchool: "High School",
+        sscBoard: "CBSE",
+        sscPercent: 85,
+        sscYear: 1995,
+        sscCertPath: "uploads/ssc1.pdf",
+        interCollege: "Junior College",
+        interPercent: 90,
+        interYear: 1997,
+        interCertPath: "uploads/inter1.pdf",
+        degCollege: "Tech University",
+        degBranch: "Computer Science",
+        degCGPA: 8.5,
+        degYear: 2001,
+        degCertPath: "uploads/deg1.pdf",
+        research: "AI Research",
+        researchPapers: ["uploads/paper1.pdf"],
+        conferences: [{ type: "International", name: "AI Conf", organizedBy: "IEEE", isbn: "123-456" }],
+        conferenceCerts: ["uploads/conf1.pdf"]
+      },
+      {
+        name: "Jane Smith",
+        email: "jane@example.com",
+        certs: "AWS Certification",
+        certYears: "2025",
+        certsPaths: ["uploads/cert3.jpg"],
+        awards: "",
+        awardYears: "",
+        awardsCertPaths: [],
+        joinDate: new Date().toISOString(),
+        experience: 3,
+        phdStatus: "Pursuing",
+        department: department,
+        phone: "0987654321",
+        dob: "1985-02-02",
+        gender: "Female",
+        aadhar: "9876-5432-1098",
+        aadharPath: "uploads/aadhar2.pdf",
+        pan: "XYZAB5678C",
+        panPath: "uploads/pan2.pdf",
+        sscSchool: "City School",
+        sscBoard: "State",
+        sscPercent: 88,
+        sscYear: 2000,
+        sscCertPath: "uploads/ssc2.pdf",
+        interCollege: "City College",
+        interPercent: 92,
+        interYear: 2002,
+        interCertPath: "uploads/inter2.pdf",
+        degCollege: "Tech Institute",
+        degBranch: "Electronics",
+        degCGPA: 9.0,
+        degYear: 2006,
+        degCertPath: "uploads/deg2.pdf",
+        research: "ML Applications",
+        researchPapers: [],
+        conferences: [],
+        conferenceCerts: []
+      }
+    ];
+
+    facultyData = facultyData.map(faculty => ({
+      ...faculty,
+      joinDate: faculty.joinDate || new Date().toISOString(),
+      experience: faculty.experience || 0,
+      phdStatus: faculty.phdStatus || "Not Pursuing",
+      certs: faculty.certs || "",
+      certYears: faculty.certYears != null ? String(faculty.certYears) : (faculty.certs && faculty.certs.trim() ? Array(faculty.certs.split(',').length).fill(new Date().getFullYear()).join(',') : ''),
+      certsPaths: faculty.certsPaths && Array.isArray(faculty.certsPaths) ? faculty.certsPaths : (faculty.certs && faculty.certs.trim() ? Array(faculty.certs.split(',').length).fill('uploads/placeholder.pdf') : []),
+      awards: faculty.awards || "",
+      awardYears: faculty.awardYears != null ? String(faculty.awardYears) : (faculty.awards && faculty.awards.trim() ? Array(faculty.awards.split(',').length).fill(new Date().getFullYear()).join(',') : ''),
+      awardsCertPaths: faculty.awardsCertPaths && Array.isArray(faculty.awardsCertPaths) ? faculty.awardsCertPaths : (faculty.awards && faculty.awards.trim() ? Array(faculty.awards.split(',').length).fill('uploads/placeholder.pdf') : []),
+    }));
+
+    console.log('Fallback processed faculty data:', JSON.stringify(facultyData, null, 2));
+
+    updateDashboardStats();
+    renderFacultyTable();
+    renderViews();
+    setupExperienceChart();
+    setupPhdStatusChart();
+    loadCertifications();
+    loadAwards();
+  }
+}
+
+function updateDashboardStats() {
+  const totalFaculty = facultyData.length;
+  const newFaculty = facultyData.filter(f => {
+    const joinDate = new Date(f.joinDate);
+    return joinDate.getFullYear() === new Date().getFullYear();
+  }).length;
+  const totalCertifications = facultyData.reduce((sum, f) => sum + (f.certs && f.certs.trim() ? f.certs.split(',').length : 0), 0);
+  const totalAwards = facultyData.reduce((sum, f) => sum + (f.awards && f.awards.trim() ? f.awards.split(',').length : 0), 0);
+
+  document.getElementById('total-faculty').textContent = totalFaculty;
+  document.getElementById('new-faculty').textContent = newFaculty;
+  document.getElementById('total-certifications').textContent = totalCertifications;
+  document.getElementById('total-awards').textContent = totalAwards;
+
+  const trend = newFaculty > 0 ? 'up' : 'down';
+  document.getElementById('new-faculty-trend').className = `stat-trend ${trend}`;
+  document.getElementById('new-faculty-trend').textContent = trend === 'up' ? `↑ ${newFaculty} this year` : '↓ No new faculty';
+}
+
+function renderFacultyTable() {
+  const thead = document.getElementById('faculty-table-head');
+  const tbody = document.getElementById('faculty-table-body');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  currentViewFields.forEach(field => {
+    const th = document.createElement('th');
+    th.textContent = field.charAt(0).toUpperCase() + field.slice(1);
+    thead.appendChild(th);
+  });
+
+  const th = document.createElement('th');
+  th.textContent = 'Actions';
+  thead.appendChild(th);
+
+  facultyData.forEach(faculty => {
+    const tr = document.createElement('tr');
+    currentViewFields.forEach(field => {
+      const td = document.createElement('td');
+      td.textContent = faculty[field] || 'N/A';
+      tr.appendChild(td);
+    });
+
+    const actionTd = document.createElement('td');
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'action-btn';
+    viewBtn.innerHTML = '<i class="fas fa-eye"></i> View';
+    viewBtn.onclick = () => showFacultyDetails(faculty);
+    actionTd.appendChild(viewBtn);
+    tr.appendChild(actionTd);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderViews() {
+  const viewsContainer = document.getElementById('views-container');
+  viewsContainer.innerHTML = '';
+
+  savedViews.forEach((view, index) => {
+    const viewPill = document.createElement('div');
+    viewPill.className = `view-pill ${view.fields.join(',') === currentViewFields.join(',') ? 'active' : ''}`;
+    viewPill.innerHTML = `
+      ${view.name}
+      ${view.name !== 'Default View' ? '<span class="delete-view"><i class="fas fa-times"></i></span>' : ''}
+    `;
+    viewPill.onclick = () => switchView(view.fields, viewPill);
+    if (view.name !== 'Default View') {
+      viewPill.querySelector('.delete-view').onclick = (e) => {
+        e.stopPropagation();
+        deleteView(index);
+      };
+    }
+    viewsContainer.appendChild(viewPill);
+  });
+
+  const viewFields = document.getElementById('view-fields');
+  viewFields.innerHTML = '';
+
+  const fields = ['name', 'email', 'phone', 'experience', 'phdStatus', 'department'];
+  fields.forEach(field => {
+    const label = document.createElement('label');
+    label.className = 'field-checkbox';
+    label.innerHTML = `
+      <input type="checkbox" value="${field}" ${currentViewFields.includes(field) ? 'checked' : ''}>
+      ${field.charAt(0).toUpperCase() + field.slice(1)}
+    `;
+    label.querySelector('input').addEventListener('change', updateTableFields);
+    viewFields.appendChild(label);
+  });
+}
+
+function openCreateViewModal() {
+  const viewFieldsCreate = document.getElementById('view-fields-create');
+  viewFieldsCreate.innerHTML = '';
+
+  const fields = ['name', 'email', 'phone', 'experience', 'phdStatus', 'department'];
+  fields.forEach(field => {
+    const label = document.createElement('label');
+    label.className = 'field-checkbox';
+    label.innerHTML = `
+      <input type="checkbox" value="${field}" ${currentViewFields.includes(field) ? 'checked' : ''}>
+      ${field.charAt(0).toUpperCase() + field.slice(1)}
+    `;
+    viewFieldsCreate.appendChild(label);
+  });
+
+  document.getElementById('view-name').value = '';
+  createViewModal.style.display = 'flex';
+}
+
+function saveNewView() {
+  const viewName = document.getElementById('view-name').value.trim();
+  const selectedFields = Array.from(document.querySelectorAll('#view-fields-create input:checked')).map(input => input.value);
+
+  if (!viewName) {
+    alert('Please enter a view name');
+    return;
+  }
+  if (selectedFields.length === 0) {
+    alert('Please select at least one field');
+    return;
+  }
+  if (savedViews.some(view => view.name === viewName)) {
+    alert('View name already exists');
+    return;
+  }
+
+  savedViews.push({ name: viewName, fields: selectedFields });
+  localStorage.setItem('savedViews', JSON.stringify(savedViews));
+  switchView(selectedFields);
+  createViewModal.style.display = 'none';
+  renderViews();
+}
+
+function switchView(fields, pill) {
+  document.querySelectorAll('.view-pill').forEach(p => p.classList.remove('active'));
+  if (pill) pill.classList.add('active');
+  currentViewFields = fields;
+  renderFacultyTable();
+  renderViews();
+}
+
+function deleteView(index) {
+  savedViews.splice(index, 1);
+  localStorage.setItem('savedViews', JSON.stringify(savedViews));
+  if (savedViews.length > 0) {
+    switchView(savedViews[0].fields);
+  } else {
+    switchView(['name', 'email', 'experience']);
+  }
+  renderViews();
+}
+
+function updateTableFields() {
+  currentViewFields = Array.from(document.querySelectorAll('#view-fields input:checked')).map(input => input.value);
+  if (currentViewFields.length === 0) {
+    currentViewFields = savedViews[0]?.fields || ['name', 'email', 'experience'];
+    renderViews();
+  }
+  renderFacultyTable();
+}
+
+function filterFaculty() {
+  const searchTerm = facultySearch.value.toLowerCase();
+  const filtered = facultyData.filter(f =>
+    (f.name && f.name.toLowerCase().includes(searchTerm)) ||
+    (f.email && f.email.toLowerCase().includes(searchTerm))
+  );
+  const tbody = document.getElementById('faculty-table-body');
+  tbody.innerHTML = '';
+
+  filtered.forEach(faculty => {
+    const tr = document.createElement('tr');
+    currentViewFields.forEach(field => {
+      const td = document.createElement('td');
+      td.textContent = faculty[field] || 'N/A';
+      tr.appendChild(td);
+    });
+
+    const actionTd = document.createElement('td');
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'action-btn';
+    viewBtn.innerHTML = '<i class="fas fa-eye"></i> View';
+    viewBtn.onclick = () => showFacultyDetails(faculty);
+    actionTd.appendChild(viewBtn);
+    tr.appendChild(actionTd);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function showFacultyDetails(faculty) {
+  const content = document.getElementById('faculty-details-content');
+  const dob = faculty.dob ? new Date(faculty.dob).toLocaleDateString() : 'Not provided';
+
+  content.innerHTML = `
+    <div class="faculty-details">
+      <div style="text-align: center; margin-bottom: 20px;">
+        ${faculty.photoPath ?
+          `<div class="faculty-photo">
+            <img src="http://localhost:5000/${faculty.photoPath}" alt="Faculty Photo">
+          </div>` :
+          `<div class="faculty-photo" style="background: #eee; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-user" style="font-size: 50px; color: #aaa;"></i>
+          </div>`}
+        <h2>${faculty.name || 'Not provided'}</h2>
+        <p>${faculty.email || 'Not provided'}</p>
+      </div>
+
+      <div class="faculty-data">
+        <div class="profile-section">
+          <h3><i class="fas fa-id-card"></i> Personal Information</h3>
+          <p><strong>Date of Birth:</strong> ${dob}</p>
+          <p><strong>Phone:</strong> ${faculty.phone ? `+91 ${faculty.phone}` : 'Not provided'}</p>
+          <p><strong>Gender:</strong> ${faculty.gender || 'Not provided'}</p>
+          <p><strong>Aadhar:</strong> ${faculty.aadhar || 'Not provided'}
+            ${faculty.aadharPath ?
+              `<a href="http://localhost:5000/${faculty.aadharPath}" class="certificate-link" download>Download Aadhar</a>` :
+              `<span class="document-error">No Aadhar Document</span>`}</p>
+          <p><strong>PAN:</strong> ${faculty.pan || 'Not provided'}
+            ${faculty.panPath ?
+              `<a href="http://localhost:5000/${faculty.panPath}" class="certificate-link" download>Download PAN</a>` :
+              `<span class="document-error">No PAN Document</span>`}</p>
+        </div>
+
+        <div class="profile-section">
+          <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+          <p><strong>SSC (10th):</strong> ${faculty.sscSchool || 'Not provided'} (${faculty.sscBoard || 'Not provided'}, ${faculty.sscPercent || 'N/A'}%, ${faculty.sscYear || 'N/A'})
+            ${faculty.sscCertPath ?
+              `<a href="http://localhost:5000/${faculty.sscCertPath}" class="certificate-link" download>Download SSC Certificate</a>` :
+              `<span class="document-error">No SSC Certificate</span>`}</p>
+          <p><strong>Intermediate:</strong> ${faculty.interCollege || 'Not provided'} (${faculty.interPercent || 'N/A'}%, ${faculty.interYear || 'N/A'})
+            ${faculty.interCertPath ?
+              `<a href="http://localhost:5000/${faculty.interCertPath}" class="certificate-link" download>Download Intermediate Certificate</a>` :
+              `<span class="document-error">No Intermediate Certificate</span>`}</p>
+          <p><strong>Degree:</strong> ${faculty.degCollege || 'Not provided'} (${faculty.degBranch || 'Not provided'}, ${faculty.degCGPA || 'N/A'} CGPA, ${faculty.degYear || 'N/A'})
+            ${faculty.degCertPath ?
+              `<a href="http://localhost:5000/${faculty.degCertPath}" class="certificate-link" download>Download Degree Certificate</a>` :
+              `<span class="document-error">No Degree Certificate</span>`}</p>
+          ${faculty.phdStatus ?
+            `<p><strong>PhD:</strong> ${faculty.phdStatus} ${faculty.phdDetails ? `- ${faculty.phdDetails}` : ''}</p>` :
+            '<p><strong>PhD:</strong> Not provided</p>'}
+        </div>
+
+        <div class="profile-section">
+          <h3><i class="fas fa-briefcase"></i> Professional Experience</h3>
+          <p><strong>Total Experience:</strong> ${faculty.experience || 0} years</p>
+          ${faculty.awards && faculty.awards.trim() ? `<p><strong>Awards:</strong> ${faculty.awards}</p>` : '<p><strong>Awards:</strong> None</p>'}
+          ${faculty.awardsCertPaths && faculty.awardsCertPaths.length > 0 ? `
+            <p><strong>Award Certificates:</strong>
+              ${faculty.awardsCertPaths.map((path, index) =>
+                `<a href="http://localhost:5000/${path}" class="certificate-link" download>Download Award ${index + 1}</a>`
+              ).join(' ')}
+            </p>` : '<p><strong>Award Certificates:</strong> None</p>'}
+          ${faculty.certs && faculty.certs.trim() ? `<p><strong>Certifications:</strong> ${faculty.certs}</p>` : '<p><strong>Certifications:</strong> None</p>'}
+          ${faculty.certsPaths && faculty.certsPaths.length > 0 ? `
+            <p><strong>Certification Documents:</strong>
+              ${faculty.certsPaths.map((path, index) =>
+                `<a href="http://localhost:5000/${path}" class="certificate-link" download>Download Certification ${index + 1}</a>`
+              ).join(' ')}
+            </p>` : '<p><strong>Certification Documents:</strong> None</p>'}
+          ${faculty.research ? `<p><strong>Research Papers:</strong> ${faculty.research}</p>` : '<p><strong>Research Papers:</strong> None</p>'}
+          ${faculty.researchPapers && faculty.researchPapers.length > 0 ? `
+            <p><strong>Research Papers:</strong>
+              ${faculty.researchPapers.map((path, index) =>
+                `<a href="http://localhost:5000/${path}" class="certificate-link" download>Download Paper ${index + 1}</a>`
+              ).join(' ')}
+            </p>` : '<p><strong>Research Papers:</strong> None</p>'}
+        </div>
+
+        ${faculty.conferences && faculty.conferences.length > 0 ? `
+        <div class="profile-section">
+          <h3><i class="fas fa-users"></i> Conferences</h3>
+          ${faculty.conferences.map((conf, index) => `
+            <p><strong>${conf.type || 'Not provided'}:</strong> ${conf.name || 'Not provided'} (Organized by: ${conf.organizedBy || 'Not provided'}) ${conf.isbn ? `ISBN: ${conf.isbn}` : ''}
+              ${faculty.conferenceCerts && faculty.conferenceCerts[index] ?
+                `<a href="http://localhost:5000/${faculty.conferenceCerts[index]}" class="certificate-link" download>Download Certificate</a>` :
+                `<span class="document-error">No Certificate</span>`}
+            </p>
+          `).join('')}
+        </div>` : `
+        <div class="profile-section">
+          <h3><i class="fas fa-users"></i> Conferences</h3>
+          <p>None</p>
+        </div>`}
+      </div>
+    </div>
+  `;
+  facultyDetailsModal.style.display = 'flex';
+}
+
+async function loadCertifications() {
+  const tbody = document.getElementById('certifications-table-body');
+  const noCertMessage = document.getElementById('no-certifications-message');
+  if (!tbody || !noCertMessage) {
+    console.error('Certifications table body or no-certifications-message element not found');
+    return;
+  }
+  tbody.innerHTML = '';
+
+  const period = certificationsPeriod.value;
+  let certifications = [];
+  let hasCertifications = false;
+
+  if (!facultyData || facultyData.length === 0) {
+    console.warn('No faculty data available to load certifications');
+    noCertMessage.style.display = 'block';
+    return;
+  }
+
+  facultyData.forEach((faculty, facultyIndex) => {
+    if (faculty.certs && faculty.certs.trim() !== '') {
+      const certTitles = faculty.certs.split(',').map(t => t.trim()).filter(t => t !== '');
+      const years = faculty.certYears && faculty.certYears.trim() !== ''
+        ? faculty.certYears.split(',').map(y => parseInt(y.trim())).filter(y => !isNaN(y))
+        : Array(certTitles.length).fill(new Date().getFullYear());
+      const certPaths = faculty.certsPaths && Array.isArray(faculty.certsPaths) && faculty.certsPaths.length > 0
+        ? faculty.certsPaths
+        : Array(certTitles.length).fill(null);
+
+      certTitles.forEach((title, index) => {
+        const year = years[index] !== undefined ? years[index] : new Date().getFullYear();
+        if (period === 'year' && year !== new Date().getFullYear()) return;
+
+        const cert = {
+          facultyName: faculty.name || 'Unknown Faculty',
+          title,
+          year,
+          document: certPaths[index] || null
+        };
+        certifications.push(cert);
+        hasCertifications = true;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cert.facultyName}</td>
+          <td>${cert.title}</td>
+          <td>${cert.year}</td>
+          <td>
+            ${cert.document ?
+              `<a href="http://localhost:5000/${cert.document}" class="certificate-link" download>Download Certification ${index + 1}</a>
+               <img src="http://localhost:5000/${cert.document}" alt="Certification Document" class="document-image" onclick="openLightbox('http://localhost:5000/${cert.document}')">` :
+              `<div class="document-error">No Document</div>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  });
+
+  noCertMessage.style.display = hasCertifications ? 'none' : 'block';
+  setupCertificationsChart(certifications);
+}
+
+async function loadAwards() {
+  const tbody = document.getElementById('awards-table-body');
+  const noAwardsMessage = document.getElementById('no-awards-message');
+  if (!tbody || !noAwardsMessage) {
+    console.error('Awards table body or no-awards-message element not found');
+    return;
+  }
+  tbody.innerHTML = '';
+
+  const period = awardsPeriod.value;
+  let awards = [];
+  let hasAwards = false;
+
+  if (!facultyData || facultyData.length === 0) {
+    console.warn('No faculty data available to load awards');
+    noAwardsMessage.style.display = 'block';
+    return;
+  }
+
+  facultyData.forEach((faculty, facultyIndex) => {
+    if (faculty.awards && faculty.awards.trim() !== '') {
+      const awardTitles = faculty.awards.split(',').map(t => t.trim()).filter(t => t !== '');
+      const years = faculty.awardYears && faculty.awardYears.trim() !== ''
+        ? faculty.awardYears.split(',').map(y => parseInt(y.trim())).filter(y => !isNaN(y))
+        : Array(awardTitles.length).fill(new Date().getFullYear());
+      const awardPaths = faculty.awardsCertPaths && Array.isArray(faculty.awardsCertPaths) && faculty.awardsCertPaths.length > 0
+        ? faculty.awardsCertPaths
+        : Array(awardTitles.length).fill(null);
+
+      awardTitles.forEach((title, index) => {
+        const year = years[index] !== undefined ? years[index] : new Date().getFullYear();
+        if (period === 'year' && year !== new Date().getFullYear()) return;
+
+        const award = {
+          facultyName: faculty.name || 'Unknown Faculty',
+          title,
+          year,
+          document: awardPaths[index] || null
+        };
+        awards.push(award);
+        hasAwards = true;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${award.facultyName}</td>
+          <td>${award.title}</td>
+          <td>${award.year}</td>
+          <td>
+            ${award.document ?
+              `<a href="http://localhost:5000/${award.document}" class="certificate-link" download>Download Award ${index + 1}</a>
+               <img src="http://localhost:5000/${award.document}" alt="Award Document" class="document-image" onclick="openLightbox('http://localhost:5000/${award.document}')">` :
+              `<div class="document-error">No Document</div>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  });
+
+  noAwardsMessage.style.display = hasAwards ? 'none' : 'block';
+  setupAwardsChart(awards);
+}
+
+function setupExperienceChart() {
+  const ctx = document.getElementById('experience-distribution-chart').getContext('2d');
+  if (experienceChart) experienceChart.destroy();
+
+  const bins = [0, 5, 10, 15, 20, 25, 30];
+  const labels = bins.slice(0, -1).map((bin, index) => `${bin}-${bins[index + 1]} years`);
+  const data = new Array(bins.length - 1).fill(0);
+
+  facultyData.forEach(faculty => {
+    const exp = faculty.experience || 0;
+    for (let i = 0; i < bins.length - 1; i++) {
+      if (exp >= bins[i] && exp < bins[i + 1]) {
+        data[i]++;
+        break;
+      } else if (exp >= bins[bins.length - 1]) {
+        data[data.length - 1]++;
+        break;
+      }
+    }
+  });
+
+  experienceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Number of Faculty',
+        data: data,
+        backgroundColor: '#3498db',
+        borderColor: '#2c3e50',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { title: { display: true, text: 'Years of Experience' } },
+        y: { beginAtZero: true, title: { display: true, text: 'Number of Faculty' }, ticks: { stepSize: 1 } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+function setupPhdStatusChart() {
+  const ctx = document.getElementById('phd-status-chart').getContext('2d');
+  if (phdStatusChart) phdStatusChart.destroy();
+
+  const statusCounts = { "Completed": 0, "Pursuing": 0, "Not Pursuing": 0 };
+
+  facultyData.forEach(faculty => {
+    const status = faculty.phdStatus || "Not Pursuing";
+    statusCounts[status]++;
+  });
+
+  phdStatusChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: Object.keys(statusCounts),
+      datasets: [{
+        data: Object.values(statusCounts),
+        backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } }
+    }
+  });
+}
+
+function setupCertificationsChart(certifications) {
+  const ctx = document.getElementById('certifications-chart').getContext('2d');
+  if (certificationsChart) certificationsChart.destroy();
+
+  const years = [...new Set(certifications.map(c => c.year))].sort();
+  const data = years.map(year => certifications.filter(c => c.year === year).length);
+
+  certificationsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: years.length > 0 ? years : [new Date().getFullYear()],
+      datasets: [{
+        label: 'Certifications',
+        data: years.length > 0 ? data : [0],
+        borderColor: '#3498db',
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+}
+
+function setupAwardsChart(awards) {
+  const ctx = document.getElementById('awards-chart').getContext('2d');
+  if (awardsChart) awardsChart.destroy();
+
+  const years = [...new Set(awards.map(a => a.year))].sort();
+  const data = years.map(year => awards.filter(a => a.year === year).length);
+
+  awardsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: years.length > 0 ? years : [new Date().getFullYear()],
+      datasets: [{
+        label: 'Awards',
+        data: years.length > 0 ? data : [0],
+        borderColor: '#3498db',
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+}
+
+function openLightbox(src) {
+  lightboxImage.src = src;
+  lightbox.style.display = 'flex';
+}
+
+function closeLightbox() {
+  lightbox.style.display = 'none';
+}
+
+function openProfileModal() {
+  profileModal.style.display = 'flex';
+}
+
+function closeModal() {
+  facultyDetailsModal.style.display = 'none';
+  profileModal.style.display = 'none';
+  createViewModal.style.display = 'none';
+}
+
+function logout() {
+  localStorage.removeItem('hodUsername');
+  localStorage.removeItem('hodDepartment');
+  localStorage.removeItem('userEmail');
+  window.location.href = 'index.html';
+}
+
+function downloadFacultyData() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let yOffset = 10;
+
+  doc.setFontSize(16);
+  doc.text('Faculty Report', 10, yOffset);
+  yOffset += 10;
+
+  facultyData.forEach((faculty, index) => {
+    doc.setFontSize(12);
+    doc.text(`Faculty ${index + 1}: ${faculty.name}`, 10, yOffset);
+    yOffset += 5;
+    doc.setFontSize(10);
+    doc.text(`Email: ${faculty.email}`, 10, yOffset);
+    yOffset += 5;
+    doc.text(`Experience: ${faculty.experience || 0} years`, 10, yOffset);
+    yOffset += 5;
+    doc.text(`Certifications: ${faculty.certs || 'None'}`, 10, yOffset);
+    yOffset += 5;
+    doc.text(`Awards: ${faculty.awards || 'None'}`, 10, yOffset);
+    yOffset += 10;
+
+    if (yOffset > 270) {
+      doc.addPage();
+      yOffset = 10;
+    }
+  });
+
+  doc.save('faculty_report.pdf');
+}
+</script>
+
+</body>
+</html>

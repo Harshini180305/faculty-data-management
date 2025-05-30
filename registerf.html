@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Registration</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    /* Navbar Styles */
+    .navbar {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-btn:hover {
+      background: #45a049;
+    }
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 100px 20px 20px;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.8s ease;
+      margin-top: 20px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    h2 {
+      color: #1e3c72;
+      font-size: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 22px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 15px;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #f8f8f8;
+      transition: all 0.2s ease;
+    }
+    input:focus, select:focus {
+      border-color: #2a5298;
+      background: #fff;
+      outline: none;
+    }
+    .password-container {
+      position: relative;
+    }
+    .password-container input {
+      padding-right: 40px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #666;
+    }
+    .toggle-password:hover {
+      color: #2a5298;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #1e3c72;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #16325c;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    a {
+      color: #1e3c72;
+      text-decoration: none;
+      font-size: 14px;
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 15px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .error-border {
+      border-color: #721c24;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+      .nav-links {
+        gap: 10px;
+      }
+    }
+    @media (max-width: 480px) {
+      .navbar {
+        flex-direction: column;
+        padding: 10px;
+      }
+      .nav-links {
+        margin-top: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      body {
+        padding-top: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+    <!-- Navbar -->
+  <nav class="navbar">
+    <a class="navbar-brand" href="homef.html">FaculTech👨‍🎓</a>
+    <div class="nav-links">
+      <a class="nav-link" href="aboutf.html">About Us</a>
+      <a class="nav-link" href="homef.html">Home</a>
+      <a class="login-btn" href="sampleloginfaculty.html">Login</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Faculty Registration</h2>
+    <form id="registerForm">
+      <div id="message" class="message" style="display: none;"></div>
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" required pattern="[A-Za-z\s]{2,50}" title="Letters and spaces only, 2-50 characters">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Enter a valid email (e.g., faculty@cbit.ac.in)">
+      </div>
+      <div class="form-group password-container">
+        <label for="password">Password</label>
+        <input type="password" id="password" required pattern="(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{6,20}" title="6-20 characters, at least one uppercase, one lowercase, one number">
+        <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+      </div>
+      <div class="form-group password-container">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" required>
+        <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" required pattern="[6-9][0-9]{9}" title="10-digit Indian mobile number starting with 6-9">
+      </div>
+      <div class="form-group">
+        <label for="department">Department</label>
+        <select id="department" required>
+          <option value="" disabled selected>Select Department</option>
+          <option value="CSE">Computer Science and Engineering</option>
+          <option value="CSM">Computer Science and Machine Learning</option>
+          <option value="CSD">Computer Science and Data Science</option>
+          <option value="IT">Information Technology</option>
+        </select>
+      </div>
+      <button type="submit" id="submitBtn">Register</button>
+    </form>
+    <a href="sampleloginfaculty.html">Back to Login</a>
+  </div>
+  <script>
+    const registerForm = document.getElementById('registerForm');
+    const messageDiv = document.getElementById('message');
+    const submitBtn = document.getElementById('submitBtn');
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.style.display = 'none';
+      const inputs = document.querySelectorAll('input, select');
+      inputs.forEach(input => input.classList.remove('error-border'));
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const department = document.getElementById('department').value;
+
+      // Client-side validation
+      const nameRegex = /^[A-Za-z\s]{2,50}$/;
+      if (!nameRegex.test(name)) {
+        document.getElementById('name').classList.add('error-border');
+        showMessage('Name must be 2-50 characters, letters and spaces only', 'error');
+        return;
+      }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        document.getElementById('email').classList.add('error-border');
+        showMessage('Enter a valid email (e.g., faculty@cbit.ac.in)', 'error');
+        return;
+      }
+
+      const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{6,20}$/;
+      if (!passwordRegex.test(password)) {
+        document.getElementById('password').classList.add('error-border');
+        showMessage('Password must be 6-20 characters, with at least one uppercase, one lowercase, and one number', 'error');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        document.getElementById('confirmPassword').classList.add('error-border');
+        showMessage('Passwords do not match', 'error');
+        return;
+      }
+
+      const phoneRegex = /^[6-9][0-9]{9}$/;
+      if (!phoneRegex.test(phone)) {
+        document.getElementById('phone').classList.add('error-border');
+        showMessage('Enter a valid 10-digit Indian mobile number starting with 6-9', 'error');
+        return;
+      }
+
+      if (!department) {
+        document.getElementById('department').classList.add('error-border');
+        showMessage('Please select a department', 'error');
+        return;
+      }
+
+      // Disable button and show loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registering...';
+
+      try {
+        const response = await fetch('http://localhost:5000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, name, phone, department })
+        });
+
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('Non-JSON response:', text);
+          throw new Error(`Server returned non-JSON response: ${text.slice(0, 50)}`);
+        }
+
+        const data = await response.json();
+        console.log('Registration response:', data);
+
+        if (response.ok) {
+          showMessage('Registration successful! Redirecting to login...', 'success');
+          setTimeout(() => window.location.href = 'sampleloginfaculty.html', 2000);
+        } else {
+          showMessage(data.error || 'Registration failed', 'error');
+        }
+      } catch (error) {
+        showMessage(`Failed to connect to server: ${error.message}`, 'error');
+        console.error('Registration error:', error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register';
+      }
+    });
+
+    function showMessage(message, type) {
+      messageDiv.textContent = message;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+      setTimeout(() => messageDiv.style.display = 'none', 5000);
+    }
+
+    function togglePassword(fieldId) {
+      const input = document.getElementById(fieldId);
+      const toggle = input.nextElementSibling;
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggle.innerHTML = '👀';
+      } else {
+        input.type = 'password';
+        toggle.innerHTML = '👁';
+      }
+    }
+  </script>
+</body>
+</html> .
