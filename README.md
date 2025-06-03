@@ -1,0 +1,2 @@
+In the evolving landscape of digital transformation, educational institutions need robust systems to efficiently manage faculty data and ensure compliance with accreditation standards. The FaculTech is a comprehensive web-based platform developed to streamline faculty information management, file uploads, and administrative oversight through a secure, centralized system.
+FDMS replaces manual, error-prone processes with an automated solution that supports the entire faculty lifecycle—from registration and profile creation to data updates and document uploads.
